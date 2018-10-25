@@ -21,11 +21,11 @@ public class Hook implements IXposedHookLoadPackage {
         inetaddress_gethostaddress.add("cn.hacktech.getip");    //测试
         inetaddress_gethostaddress.add("com.asiainfo.sec.hubeiwifi");   //湖北飞young
 
-        if (inetaddress_gethostaddress.contains(lpparam.packageName)) {
-
+        // 测试
+        if (lpparam.packageName.equals("cn.hacktech.getip")) {
             XposedBridge.log("[FuckNet] Entry app: " + lpparam.packageName);
 
-            XposedHelpers.findAndHookMethod("java.net.InetAddress", lpparam.classLoader,"getHostAddress", new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod("cn.hacktech.getip.MainActivity", lpparam.classLoader,"getIpAddress", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     XposedBridge.log("[FuckNet] Start hook: " + lpparam.packageName);
@@ -38,6 +38,42 @@ public class Hook implements IXposedHookLoadPackage {
                     if (myhttp.userip != "") {
                         param.setResult(myhttp.userip);
                     }
+                }
+            });
+        }
+
+        // 湖北飞young
+        if (lpparam.packageName.equals("com.asiainfo.sec.hubeiwifi")) {
+            XposedBridge.log("[FuckNet] Entry app: " + lpparam.packageName);
+
+            XposedHelpers.findAndHookMethod("com.asiainfo.sec.hubeiwifi.e.n", lpparam.classLoader,"a", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    XposedBridge.log("[FuckNet] Start hook: " + lpparam.packageName);
+                    List<String> iplist = new ArrayList();
+                    Httpthread myhttp = new Httpthread();
+                    myhttp.start();
+                    while (true) {
+                        if (myhttp.userip != null)
+                            break;
+                    }
+                    if (myhttp.userip != "") {
+                        iplist.add(myhttp.userip);
+                        param.setResult(iplist);
+                    }
+                }
+            });
+        }
+
+        // netkeeper-android
+        if (lpparam.packageName.equals("com.xinli.netkeeper")) {
+            XposedBridge.log("[FuckNet] Entry app: " + lpparam.packageName);
+
+            XposedHelpers.findAndHookMethod("com.xinli.vkeeper.fragments.LoginFragment", lpparam.classLoader,"isHuBeiIpLimited", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    XposedBridge.log("[FuckNet] Start hook: " + lpparam.packageName);
+                    param.setResult(true);
                 }
             });
         }
