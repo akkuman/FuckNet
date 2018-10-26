@@ -35,11 +35,10 @@ public class Hook implements IXposedHookLoadPackage {
 
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         // 包名列表
-        inetaddress_gethostaddress.add("cn.hacktech.getip");    //测试
+        inetaddress_gethostaddress.add("cn.hacktech.getip");    //测试app
         inetaddress_gethostaddress.add("com.asiainfo.sec.hubeiwifi");   //湖北飞young
 
-        // 测试
-        if (lpparam.packageName.equals("cn.hacktech.getip")) {
+        if (lpparam.packageName.equals("cn.hacktech.getip")) {  // 测试app
             XposedBridge.log("[FuckNet] Entry app: " + lpparam.packageName);
 
             XposedHelpers.findAndHookMethod(java.net.InetAddress.class, "getHostAddress", new XC_MethodHook() {
@@ -57,7 +56,7 @@ public class Hook implements IXposedHookLoadPackage {
                     XposedBridge.log("[FuckNet] Find Method And Hook: " + lpparam.packageName);
 
                     //这里进行字符串分割，博主这里测试的新IP地址为“192.99.28.10”
-                    String []str ="192.99.28.10".split("\\.");
+                    String []str ="100.64.7.100".split("\\.");
 
                     //定义一个字符串，用来储存反转后的IP地址
                     String ipAdress="";
@@ -90,10 +89,7 @@ public class Hook implements IXposedHookLoadPackage {
 //                    }
 //                }
 //            });
-        }
-
-        // 湖北飞young
-        if (lpparam.packageName.equals("com.asiainfo.sec.hubeiwifi")) {
+        } else if (lpparam.packageName.equals("com.asiainfo.sec.hubeiwifi")) {  // 湖北飞young
             XposedBridge.log("[FuckNet] Entry app: " + lpparam.packageName);
 
             XposedHelpers.findAndHookMethod("com.asiainfo.sec.hubeiwifi.e.n", lpparam.classLoader,"a", new XC_MethodHook() {
@@ -113,10 +109,7 @@ public class Hook implements IXposedHookLoadPackage {
                     }
                 }
             });
-        }
-
-        // netkeeper-android
-        if (lpparam.packageName.equals("com.xinli.netkeeper")) {
+        } else {    // other
             XposedBridge.log("[FuckNet] Entry app: " + lpparam.packageName);
 
             XposedHelpers.findAndHookMethod(android.net.wifi.WifiInfo.class, "getIpAddress", new XC_MethodHook() {
@@ -173,6 +166,8 @@ class Httpthread extends Thread
             Matcher m = r.matcher(location);
             if (m.find()) {
                 this.userip = m.group(1);
+            } else {
+                this.userip = "";
             }
         } catch (Exception e) {
             XposedBridge.log("[FuckNet] Error: " + e.toString());
